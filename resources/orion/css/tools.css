@@ -2,31 +2,31 @@
 
 @font-face {
     font-family: "SpoqaHanSansNeo MD";
-    src: url("/resources/orion/fonts/SpoqaHanSansNeo-Medium.woff2");
+    src: url("/world-map-demo/resources/orion/fonts/SpoqaHanSansNeo-Medium.woff2");
     font-display: block;
 }
 
 @font-face {
     font-family: "SpoqaHanSansNeo BD";
-    src: url("/resources/orion/fonts/SpoqaHanSansNeo-Bold.ttf");
+    src: url("/world-map-demo/resources/orion/fonts/SpoqaHanSansNeo-Bold.ttf");
     font-display: block;
 }
 
 @font-face {
     font-family: "SpoqaHanSansNeo RG";
-    src: url("/resources/orion/fonts/SpoqaHanSansNeo-Regular.ttf");
+    src: url("/world-map-demo/resources/orion/fonts/SpoqaHanSansNeo-Regular.ttf");
     font-display: block;
 }
 
 @font-face {
     font-family: "Gmarket Sans BD";
-    src: url("/resources/orion/fonts/GmarketSansTTFBold.woff2");
+    src: url("/world-map-demo/resources/orion/fonts/GmarketSansTTFBold.woff2");
     font-display: block;
 }
 
 @font-face {
     font-family: "Montserrat-BoldItalic";
-    src: url("/resources/orion/fonts/Montserrat-BoldItalic.ttf");
+    src: url("/world-map-demo/resources/orion/fonts/Montserrat-BoldItalic.ttf");
     font-display: block;
 }
 
