@@ -1,0 +1,73 @@
+.btn-block {
+    width: 98.5% !important;
+}
+
+.btn {
+    margin: 3px;
+}
+
+.table-container {
+    margin: 0;
+    padding: 0;
+    border: none;
+    outline: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+label {
+	margin-bottom: 0em !important;
+}
+
+td {
+    padding: 8px;
+}
+
+select {
+	font-size: 18px !important;
+	margin-bottom: 28px !important;
+	color: #3a3b45 !important;
+}
+
+.card-body {
+    background-color: #f8f9fc;
+}
+
+.slider>p {
+    text-align: right;
+    display: inline-block;
+    width: 100px;
+    color: #3a3b45;
+}
+
+.slider>input[type="number"] {
+    display: inline-block;
+    width: 100px;
+}
+
+.value-info {
+    border-bottom: 2px solid black;
+    margin: 6px 0 1px 0;
+    color: #3a3b45;
+}
+
+.value-info>p {
+    margin: 0;
+    padding: 6px;
+    text-align: left;
+    font-size: 18px;
+    font-weight: 700;
+    color: #3a3b45;
+}
+
+.shape-label {
+    display: inline-block;
+    width: 154px;
+    text-align: right;
+}
+
+.shape-input {
+    display: inline-block;
+    width: 70px;
+}
