@@ -436,8 +436,8 @@ class WorldMapGenerator {
     initJSON() {
         // 판 경계 데이터 로드
         Promise.all([
-            fetch("/world-map-demo/orion/tools/vectormap/data/new/plate_boundary.geojson").then(response => response.json()),
-            fetch("/world-map-demo/orion/tools/vectormap/data/new/plate_boundary_simple.geojson").then(response => response.json())
+            fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/plate_boundary.geojson").then(response => response.json()),
+            fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/plate_boundary_simple.geojson").then(response => response.json())
         ])
         .then(([plate, plateSimple]) => {
             this.GeoData.plate = plate;
@@ -447,8 +447,8 @@ class WorldMapGenerator {
         });
         // 호수 데이터 로드
         Promise.all([
-            fetch("/world-map-demo/orion/tools/vectormap/data/new/50m_lakes.geojson").then(response => response.json()),
-            fetch("/world-map-demo/orion/tools/vectormap/data/new/110m_lakes.geojson").then(response => response.json())
+            fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/50m_lakes.geojson").then(response => response.json()),
+            fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/110m_lakes.geojson").then(response => response.json())
         ])
             .then(([lake50, lake110]) => {
                 this.GeoData.lake50 = lake50;
@@ -458,8 +458,8 @@ class WorldMapGenerator {
             });
         // 미국(중국) 주(성) 데이터 로드
         Promise.all([
-            fetch("/world-map-demo/orion/tools/vectormap/data/new/50m_states.topojson").then(response => response.json()),
-            fetch("/world-map-demo/orion/tools/vectormap/data/new/110m_states_usa.topojson").then(response => response.json())
+            fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/50m_states.topojson").then(response => response.json()),
+            fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/110m_states_usa.topojson").then(response => response.json())
         ])
             .then(([states50, states110]) => {
                 let stateData = topojson.feature(states50, states50.objects.states);
@@ -494,7 +494,7 @@ class WorldMapGenerator {
                 this.drawSVG(false);
             });
         // 중국 성 경계 데이터 로드
-        fetch("/world-map-demo/orion/tools/vectormap/data/new/50m_provinces_china_border.geojson")
+        fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/50m_provinces_china_border.geojson")
             .then(response => response.json())
             .then((data) => {
                 this.GeoData.provincesChinaBorder50 = data;
@@ -504,8 +504,8 @@ class WorldMapGenerator {
         
         // 미국 주 경계 데이터 로드
         Promise.all([
-            fetch("/world-map-demo/orion/tools/vectormap/data/new/50m_states_usa_border.geojson").then(response => response.json()),
-            fetch("/world-map-demo/orion/tools/vectormap/data/new/110m_states_usa_border.geojson").then(response => response.json())
+            fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/50m_states_usa_border.geojson").then(response => response.json()),
+            fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/110m_states_usa_border.geojson").then(response => response.json())
         ])
             .then(([border50, border110]) => {
                 this.GeoData.statesUSABorder50 = border50;
@@ -515,9 +515,9 @@ class WorldMapGenerator {
             });
         // 육지 데이터 로드
         Promise.all([
-            fetch("/world-map-demo/orion/tools/vectormap/data/new/50m_land.topojson").then(response => response.json()),
-            fetch("/world-map-demo/orion/tools/vectormap/data/new/110m_land.topojson").then(response => response.json()),
-            fetch("/world-map-demo/orion/tools/vectormap/data/new/10m_land.topojson").then(response => response.json())
+            fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/50m_land.topojson").then(response => response.json()),
+            fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/110m_land.topojson").then(response => response.json()),
+            fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/10m_land.topojson").then(response => response.json())
         ])
             .then(([land50, land110, land10]) => {
                 this.GeoData.land50 = topojson.feature(land50, land50.objects.land);
@@ -528,11 +528,11 @@ class WorldMapGenerator {
             });
         // 국가 및 분쟁지역 데이터 로드
         Promise.all([
-            fetch("/world-map-demo/orion/tools/vectormap/data/new/50m_countries.topojson").then(response => response.json()),
-            fetch("/world-map-demo/orion/tools/vectormap/data/new/50m_dispute.topojson").then(response => response.json()),
-            fetch("/world-map-demo/orion/tools/vectormap/data/new/110m_countries.topojson").then(response => response.json()),
-            fetch("/world-map-demo/orion/tools/vectormap/data/new/110m_dispute.topojson").then(response => response.json()),
-            fetch("/world-map-demo/orion/tools/vectormap/data/new/10m_countries.topojson").then(response => response.json())
+            fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/50m_countries.topojson").then(response => response.json()),
+            fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/50m_dispute.topojson").then(response => response.json()),
+            fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/110m_countries.topojson").then(response => response.json()),
+            fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/110m_dispute.topojson").then(response => response.json()),
+            fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/10m_countries.topojson").then(response => response.json())
         ])
             .then(([countries50, dispute50, countries110, dispute110, countries10]) => {
                 this.GeoData.countries50 = topojson.feature(countries50, countries50.objects.countries);
@@ -549,8 +549,8 @@ class WorldMapGenerator {
             });
         // 독도 데이터 로드 - 대한민국 영토에 통합
         Promise.all([
-            fetch("/world-map-demo/orion/tools/vectormap/data/new/50m_dokdo.geojson").then(res => res.json()),
-            fetch("/world-map-demo/orion/tools/vectormap/data/new/110m_dokdo.geojson").then(res => res.json())
+            fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/50m_dokdo.geojson").then(res => res.json()),
+            fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/110m_dokdo.geojson").then(res => res.json())
         ])
             .then(([dokdo50, dokdo110]) => {
                 // land, countries가 모두 로드될 때까지 기다리기
@@ -605,12 +605,12 @@ class WorldMapGenerator {
             });
         // 고화질 한반도 백지도 데이터 로드
         Promise.all([
-            fetch("/world-map-demo/orion/tools/vectormap/data/new/korea_sido.topojson").then(response => response.json()),
-            fetch("/world-map-demo/orion/tools/vectormap/data/new/korea_sig.topojson").then(response => response.json()),
-            fetch("/world-map-demo/orion/tools/vectormap/data/new/korea_sig_merged.topojson").then(response => response.json()),
-            fetch("/world-map-demo/orion/tools/vectormap/data/new/korea_sido_border.geojson").then(response => response.json()),
-            fetch("/world-map-demo/orion/tools/vectormap/data/new/korea_sig_border.geojson").then(response => response.json()),
-            fetch("/world-map-demo/orion/tools/vectormap/data/new/korea_sig_merged_border.geojson").then(response => response.json())
+            fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/korea_sido.topojson").then(response => response.json()),
+            fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/korea_sig.topojson").then(response => response.json()),
+            fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/korea_sig_merged.topojson").then(response => response.json()),
+            fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/korea_sido_border.geojson").then(response => response.json()),
+            fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/korea_sig_border.geojson").then(response => response.json()),
+            fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/korea_sig_merged_border.geojson").then(response => response.json())
         ])
             .then(([koreaSido, koreaSig, koreaSigMerged, koreaSidoBorder, koreaSigBorder, koreaSigMergedBorder]) => {
                 this.GeoData.koreaBasemapSigMerged = topojson.feature(koreaSigMerged, koreaSigMerged.objects.sig);
@@ -625,9 +625,9 @@ class WorldMapGenerator {
             });
         // 국경선 데이터 로드
         Promise.all([
-            fetch("/world-map-demo/orion/tools/vectormap/data/new/50m_countries_border.geojson").then(response => response.json()),
-            fetch("/world-map-demo/orion/tools/vectormap/data/new/110m_countries_border.geojson").then(response => response.json()),
-            fetch("/world-map-demo/orion/tools/vectormap/data/new/10m_countries_border.geojson").then(response => response.json())
+            fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/50m_countries_border.geojson").then(response => response.json()),
+            fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/110m_countries_border.geojson").then(response => response.json()),
+            fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/10m_countries_border.geojson").then(response => response.json())
         ])
             .then(([border50, border110, border10]) => {
                 this.GeoData.countriesBorder50 = border50;
@@ -637,7 +637,7 @@ class WorldMapGenerator {
                 this.drawSVG(false);
             });
         // 지자기 경사각 데이터 로드
-        fetch("/world-map-demo/orion/tools/vectormap/data/new/inclination.json")
+        fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/inclination.json")
             .then(response => response.json())
             .then((data) => {
                 this.inclination = data;
@@ -645,7 +645,7 @@ class WorldMapGenerator {
                 this.drawSVG(false);
             });
         // 해류 데이터 로드
-        fetch("/world-map-demo/orion/tools/vectormap/data/new/ocean_currents.json")
+        fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/ocean_currents.json")
             .then(response => response.json())
             .then((data) => {
                 this.GeoData.oceanCurrents = data;
@@ -653,7 +653,7 @@ class WorldMapGenerator {
                 this.drawSVG(false);
             });
         // 심층 순환 데이터 로드
-        fetch("/world-map-demo/orion/tools/vectormap/data/new/deep_circulations.json")
+        fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/deep_circulations.json")
             .then(response => response.json())
             .then((data) => {
                 this.GeoData.deepCirculations = data;
@@ -662,7 +662,7 @@ class WorldMapGenerator {
             });
             
         // 문화권 영역 데이터 로드
-        fetch("/world-map-demo/orion/tools/vectormap/data/new/plate_boundary.geojson")
+        fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/plate_boundary.geojson")
             .then(response => response.json())
             .then((data) => {
                 this.GeoData.culturalBoundary = data;
