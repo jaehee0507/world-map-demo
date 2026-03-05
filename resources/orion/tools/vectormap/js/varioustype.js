@@ -1,6 +1,4 @@
 const generator = new WorldMapGenerator();
-generator.setType(WorldMapGenerator.GENERATOR_TYPES.VARIOUS);
-let Elements = {};
 
 let styleDebounceTimer = null;
 let lastStyleUpdate = 0;
@@ -20,87 +18,65 @@ function updateStyleWithDebounce(key, value) {
     }, 200); // 200ms 딜레이
 }
 
-/**
- * 분쟁 국가 목록 UI를 갱신합니다. 페이지 로드 시와 추가/삭제/수정 후에 호출합니다.
- */
-function refreshDisputeListUI() {
-    const list = document.getElementById('dispute-list');
-    if (!list) return;
-    list.innerHTML = '';
-    WorldMapGenerator.getDisputeCountries().forEach(entry => {
-        const li = document.createElement('li');
-        li.className = 'd-flex justify-content-between align-items-center mb-1';
-        const span = document.createElement('span');
-        span.textContent = entry;
-        const btnGroup = document.createElement('span');
-        const editBtn = document.createElement('button');
-        editBtn.type = 'button';
-        editBtn.className = 'btn btn-sm btn-secondary mr-1';
-        editBtn.textContent = '✏️';
-        editBtn.onclick = () => {
-            const newVal = prompt('분쟁 국가 쌍 수정', entry);
-            if (newVal && newVal !== entry) {
+window.addEventListener("load", () => {
+    /**
+     * 분쟁 국가 목록 UI를 갱신 함수
+     */
+    function refreshDisputeListUI() {
+        const list = document.getElementById('dispute-list');
+        if (!list) return;
+        list.innerHTML = '';
+        WorldMapGenerator.getDisputeCountries().forEach(entry => {
+            const li = document.createElement('li');
+            li.className = 'd-flex justify-content-between align-items-center mb-1';
+            const span = document.createElement('span');
+            span.textContent = entry;
+            const btnGroup = document.createElement('span');
+            const editBtn = document.createElement('button');
+            editBtn.type = 'button';
+            editBtn.className = 'btn btn-sm btn-secondary mr-1';
+            editBtn.textContent = '✏️';
+            editBtn.onclick = () => {
+                const newVal = prompt('분쟁 국가 쌍 수정', entry);
+                if (newVal && newVal !== entry) {
+                    WorldMapGenerator.removeDisputeCountry(entry);
+                    WorldMapGenerator.addDisputeCountry(newVal);
+                    refreshDisputeListUI();
+                    generator.drawSVG(false);
+                }
+            };
+            const delBtn = document.createElement('button');
+            delBtn.type = 'button';
+            delBtn.className = 'btn btn-sm btn-danger';
+            delBtn.textContent = '🗑️';
+            delBtn.onclick = () => {
                 WorldMapGenerator.removeDisputeCountry(entry);
-                WorldMapGenerator.addDisputeCountry(newVal);
+                refreshDisputeListUI();
+                generator.drawSVG(false);
+            };
+            btnGroup.appendChild(editBtn);
+            btnGroup.appendChild(delBtn);
+            li.appendChild(span);
+            li.appendChild(btnGroup);
+            list.appendChild(li);
+        });
+    }
+    // 분쟁 국가 목록 UI 이벤트 연결
+    const addInput = document.getElementById('new-dispute-input');
+    const addButton = document.getElementById('add-dispute-btn');
+    if (addButton) {
+        addButton.onclick = () => {
+            const val = addInput.value.trim();
+            if (val) {
+                WorldMapGenerator.addDisputeCountry(val);
+                addInput.value = '';
                 refreshDisputeListUI();
                 generator.drawSVG(false);
             }
         };
-        const delBtn = document.createElement('button');
-        delBtn.type = 'button';
-        delBtn.className = 'btn btn-sm btn-danger';
-        delBtn.textContent = '🗑️';
-        delBtn.onclick = () => {
-            WorldMapGenerator.removeDisputeCountry(entry);
-            refreshDisputeListUI();
-            generator.drawSVG(false);
-        };
-        btnGroup.appendChild(editBtn);
-        btnGroup.appendChild(delBtn);
-        li.appendChild(span);
-        li.appendChild(btnGroup);
-        list.appendChild(li);
-    });
-}
-
-function checkInputNumberPossible(element) {
-    if (parseFloat(element.value) > parseFloat(element.max))
-        element.value = element.max;
-
-    if (parseFloat(element.value) < parseFloat(element.min))
-        element.value = element.min;
-}
-
-function onInputValue(numberInput, rangeInput, formType, forceSquash) {
-    checkInputNumberPossible(numberInput);
-
-    if (formType === "range")
-        numberInput.value = parseFloat(rangeInput.value);
-    else if (formType === "number")
-        rangeInput.value = parseFloat(numberInput.value);
-
-    generator.setRotate(Elements.NumberInput.lambda.value, Elements.NumberInput.phi.value, Elements.NumberInput.gamma.value);
-    generator.setGraticules(Elements.NumberInput.latitude.value, Elements.NumberInput.longitude.value, Elements.NumberInput.inclination.value);
-    generator.drawSVG(forceSquash);
-}
-
-window.addEventListener("load", () => {
-    const select = document.getElementById("projection-select");
-    WorldMapGenerator.PROJECTIONS.forEach((element, index) => {
-        let opt = document.createElement("option");
-        opt.value = index;
-        opt.text = element.name;
-        select.appendChild(opt);
-    });
-
-    //Cylindrical stereographic이 기본으로 선택
-    select.selectedIndex = WorldMapGenerator.PROJECTIONS.findIndex(p => p.name === "cylindrical stereographic");
-    select.onchange = () => {
-        generator.setProjection(WorldMapGenerator.PROJECTIONS[select.options[select.selectedIndex].value].name);
-        generator.drawSVG(false);
-    };
-
-    generator.setSvgElementId("generated-svg");
+    }
+    // 최초 로드 시 목록 갱신
+    refreshDisputeListUI();
 
     /**
      * DEFAULT_STYLES로부터 모든 input 요소들을 초기화하는 함수
@@ -127,24 +103,30 @@ window.addEventListener("load", () => {
     // DEFAULT_STYLES로부터 초기화
     initializeStyleInputs();
 
-    // 분쟁 국가 목록 UI 이벤트 연결
-    const addInput = document.getElementById('new-dispute-input');
-    const addButton = document.getElementById('add-dispute-btn');
-    if (addButton) {
-        addButton.onclick = () => {
-            const val = addInput.value.trim();
-            if (val) {
-                WorldMapGenerator.addDisputeCountry(val);
-                addInput.value = '';
-                refreshDisputeListUI();
-                generator.drawSVG(false);
-            }
-        };
-    }
-    // 최초 로드 시 목록 갱신
-    refreshDisputeListUI();
+    function checkInputNumberPossible(element) {
+        if (parseFloat(element.value) > parseFloat(element.max))
+            element.value = element.max;
 
-    Elements = {
+        if (parseFloat(element.value) < parseFloat(element.min))
+            element.value = element.min;
+    }
+
+    function onInputValue(numberInput, rangeInput, formType, forceSquash) {
+        checkInputNumberPossible(numberInput);
+
+        if (formType === "range")
+            numberInput.value = parseFloat(rangeInput.value);
+        else if (formType === "number")
+            rangeInput.value = parseFloat(numberInput.value);
+
+        generator.setRotate(Elements.NumberInput.lambda.value, Elements.NumberInput.phi.value, Elements.NumberInput.gamma.value);
+        generator.setGraticules(Elements.NumberInput.latitude.value, Elements.NumberInput.longitude.value, Elements.NumberInput.inclination.value);
+        generator.drawSVG(forceSquash);
+    }
+
+    generator.setSvgElementId("generated-svg");
+
+    let Elements = {
         Button: {
             addShape: document.getElementById("add-shape"),
             deleteAllShapes: document.getElementById("delete-shape"),
@@ -323,14 +305,30 @@ window.addEventListener("load", () => {
         }
     };
 
-
     Array.from(Elements.Checkbox).forEach((e, i) => {
         e.onclick = () => { generator.toggleOption(i); };
         e.checked = generator.Options[Object.keys(generator.Options)[i]];
+
+        if (Object.keys(generator.Options)[i] === "projectChinaProvinceBorder")
+            e.disabled = true;
     });
 
     generator.Callback.OptionToggled = (optionName, index, value) => {
         Array.from(Elements.Checkbox)[index].checked = value;
+    };
+
+    generator.Callback.TypeChanged = (type) => {
+        if (type === WorldMapGenerator.GENERATOR_TYPES.KOR) {
+            Elements.Checkbox[Object.keys(generator.Options).indexOf("projectChinaProvinceBorder")].disabled = true;
+            Elements.Checkbox[Object.keys(generator.Options).indexOf("projectKoreaSido")].disabled = false;
+            Elements.Checkbox[Object.keys(generator.Options).indexOf("projectKoreaSig")].disabled = false;
+            Elements.Checkbox[Object.keys(generator.Options).indexOf("squashLand")].disabled = true;
+        } else {
+            Elements.Checkbox[Object.keys(generator.Options).indexOf("projectChinaProvinceBorder")].disabled = false;
+            Elements.Checkbox[Object.keys(generator.Options).indexOf("projectKoreaSido")].disabled = true;
+            Elements.Checkbox[Object.keys(generator.Options).indexOf("projectKoreaSig")].disabled = true;
+            Elements.Checkbox[Object.keys(generator.Options).indexOf("squashLand")].disabled = false;
+        }
     };
 
     for (const key in Elements.RadioButton) {
@@ -374,4 +372,21 @@ window.addEventListener("load", () => {
         if (Elements.NumberInput[key].oninput === null)
             Elements.NumberInput[key].oninput = () => { checkInputNumberPossible(Elements.NumberInput[key]) };
     }
+
+    generator.setType(WorldMapGenerator.GENERATOR_TYPES.VARIOUS);
+
+    // Various type만의 고유한 코드 (projection 선택 DOM과 WorldMapGenerator를 붙이는 코드)
+    const select = document.getElementById("projection-select");
+    WorldMapGenerator.PROJECTIONS.forEach((element, index) => {
+        let opt = document.createElement("option");
+        opt.value = index;
+        opt.text = element.name;
+        select.appendChild(opt);
+    });
+
+    select.selectedIndex = generator.projectionIndex;
+    select.onchange = () => {
+        generator.setProjection(WorldMapGenerator.PROJECTIONS[select.options[select.selectedIndex].value].name);
+        generator.drawSVG(false);
+    };
 });

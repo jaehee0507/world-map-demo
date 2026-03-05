@@ -1,3 +1,5 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://www.springframework.org/security/tags" prefix="sec" %>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -5,26 +7,28 @@
 	<title>구형 지도 생성기</title>
     <meta charset="utf-8">
 	
-	<link rel="stylesheet" href="/world-map-demo/resources/orion/css/tools.css?after">
-    <link rel="stylesheet" href="/world-map-demo/resources/orion/css/generator.css?after">
-    <link rel="icon" href="/world-map-demo/resources/orion/images/favicon.png" sizes="any" type="image/png">
-    <link rel="icon" href="/world-map-demo/resources/orion/images/favicon-32.png" sizes="32x32" type="image/png">
-    <link rel="icon" href="/world-map-demo/resources/orion/images/favicon-192.png" sizes="192x192" type="image/png">
-    <link rel="apple-touch-icon" href="/world-map-demo/resources/orion/images/apple-icon.png" type="image/png">
+	<link rel="stylesheet" href="/world-map-demo/orion/css/tools.css?after">
+    <link rel="stylesheet" href="/world-map-demo/orion/css/generator.css?after">
+    <link rel="icon" href="/world-map-demo/orion/images/favicon.png" sizes="any" type="image/png">
+    <link rel="icon" href="/world-map-demo/orion/images/favicon-32.png" sizes="32x32" type="image/png">
+    <link rel="icon" href="/world-map-demo/orion/images/favicon-192.png" sizes="192x192" type="image/png">
+    <link rel="apple-touch-icon" href="/world-map-demo/orion/images/apple-icon.png" type="image/png">
     
-    <script src="/world-map-demo/resources/orion/tools/vectormap/js/d3.v6.min.js"></script>
-    <script src="/world-map-demo/resources/orion/tools/vectormap/js/d3-geo-projection.v3.min.js"></script>
-    <script src="/world-map-demo/resources/orion/tools/vectormap/js/topojson.js"></script>
-    <script src="/world-map-demo/resources/orion/tools/vectormap/js/WorldMapGenerator.js"></script>
-    <script src="/world-map-demo/resources/orion/tools/vectormap/js/spheretype.js"></script>
+    <script src="/world-map-demo/orion/tools/vectormap/js/d3.v6.min.js"></script>
+    <script src="/world-map-demo/orion/tools/vectormap/js/d3-geo-projection.v3.min.js"></script>
+    <script src="/world-map-demo/orion/tools/vectormap/js/topojson.js"></script>
+    <script src="/world-map-demo/orion/tools/vectormap/js/WorldMapGenerator.js"></script>
+    <script src="/world-map-demo/orion/tools/vectormap/js/spheretype.js"></script>
     
     <!-- Custom fonts for this template -->
-    <link rel="stylesheet" href="/world-map-demo/resources/vendor/fontawesome-free/css/all.min.css" type="text/css">
+    <link rel="stylesheet" href="/world-map-demo/vendor/fontawesome-free/css/all.min.css" type="text/css">
 
     <!-- Custom styles for this template -->
-    <link rel="stylesheet" href="/world-map-demo/resources/css/sb-admin-2.min.css">
+    <link rel="stylesheet" href="/world-map-demo/css/sb-admin-2.min.css">
 
 </head>
+
+<%@include file="../../includes/header_spheretype.jsp"%>
 
         <!-- Page Heading -->
         <h1 class="h3 mb-2" style="font-weight: bold; color: #5a5c69;">구형 지도 생성기</h1>
@@ -112,6 +116,12 @@
                                     </div>
                                     <div style="margin-bottom: 3px; margin-left: 30px;">
                                         <label><input type="checkbox" class="option-checkbox" /> 중국 성(省) 표시 (단순화하면 안 보임)</label>
+                                    </div>
+                                    <div style="margin-bottom: 3px; margin-left: 30px;">
+                                        <label><input type="checkbox" class="option-checkbox" /> 시도 표시 (한반도 중심 모드 전용)</label>
+                                    </div>
+                                    <div style="margin-bottom: 3px; margin-left: 45px;">
+                                        <label><input type="checkbox" class="option-checkbox" /> 시군구 표시 (한반도 중심 모드 전용)</label>
                                     </div>
                                     <div style="margin-bottom: 3px;">
                                         <label><input type="checkbox" class="option-checkbox" /> 경도선 표시</label>
@@ -384,16 +394,18 @@
                 </table>
             </div>
         </div>        
+                 
+<%@include file="../../includes/footer.jsp"%>
     
     <!-- Bootstrap core JavaScript-->
-    <script src="/world-map-demo/resources/vendor/jquery/jquery.min.js"></script>
-    <script src="/world-map-demo/resources/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/world-map-demo/vendor/jquery/jquery.min.js"></script>
+    <script src="/world-map-demo/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
     <!-- Core plugin JavaScript-->
-    <script src="/world-map-demo/resources/vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="/world-map-demo/vendor/jquery-easing/jquery.easing.min.js"></script>
 
     <!-- Custom scripts for all pages-->
-    <script src="/world-map-demo/resources/js/sb-admin-2.min.js"></script>
+    <script src="/world-map-demo/js/sb-admin-2.min.js"></script>
 
 </body>
 
