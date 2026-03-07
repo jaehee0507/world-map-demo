@@ -709,7 +709,7 @@ class WorldMapGenerator {
                 this._rotate_before = [...this.rotate];
                 this.setProjection("Albers");
                 this.toggleOption({option: "projectLakeReservoir", value: true, draw: false});
-                this.toggleOption({option: "squashLakeReservoir", value: true, draw: false});
+                this.toggleOption({option: "squashLakeReservoir", value: false, draw: false});
                 this.toggleOption({option: "projectLand", value: true, draw: false});
                 this.toggleOption({option: "projectBorder", value: true, draw: false});
                 this.toggleOption({option: "projectUSAStateBorder", value: true, draw: false});
