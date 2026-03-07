@@ -163,7 +163,7 @@ window.addEventListener("load", () => {
             upperComma: document.getElementById("shape-comma0"),
             lowerComma: document.getElementById("shape-comma1")
         },
-        Checkbox: document.getElementsByClassName("option-checkbox"),
+        OptionButton: document.getElementsByClassName("option-checkbox"),
         RadioButton: {
             circle: document.getElementById("shape-radio0"),
             line: document.getElementById("shape-radio1")
@@ -211,29 +211,48 @@ window.addEventListener("load", () => {
         });
     };
 
-    Array.from(Elements.Checkbox).forEach((e, i) => {
-        e.onclick = () => { generator.toggleOption(i); };
-        e.checked = generator.Options[Object.keys(generator.Options)[i]];
+    Array.from(Elements.OptionButton).forEach((e, i) => {
+        const optionName = Object.keys(generator.Options)[i];
+        if (optionName === "projectKoreaSido" || optionName === "projectKoreaSig" || optionName === "projectKoreaSigMerged")
+            e.onchange = (radio) => {
+                const ids = ["radio-sido", "radio-sig", "radio-sig-merged"];
+                const options = ["projectKoreaSido", "projectKoreaSig", "projectKoreaSigMerged"];
+                ids.forEach((id, index) => {
+                    if (id === radio.target.id) {
+                        generator.toggleOption({option: options[index], value: true, draw: false, source: "ui"});
+                    } else {
+                        generator.toggleOption({option: options[index], value: false, draw: false, source: "ui"});
+                    }
+                });
+                generator.drawSVG(false);
+            };
+        else
+            e.onclick = () => { generator.toggleOption({option: i, source: "ui"}); };
+        e.checked = generator.Options[optionName];
 
-        if (Object.keys(generator.Options)[i] === "projectChinaProvinceBorder")
+        if (optionName === "projectChinaProvinceBorder")
             e.disabled = true;
     });
 
-    generator.Callback.OptionToggled = (optionName, index, value) => {
-        Array.from(Elements.Checkbox)[index].checked = value;
+    generator.Callback.OptionToggled = (optionName, index, value, source) => {
+        if (source === "api")
+            Array.from(Elements.OptionButton)[index].checked = value;
     };
-
     generator.Callback.TypeChanged = (type) => {
         if (type === WorldMapGenerator.GENERATOR_TYPES.KOR) {
-            Elements.Checkbox[Object.keys(generator.Options).indexOf("projectChinaProvinceBorder")].disabled = true;
-            Elements.Checkbox[Object.keys(generator.Options).indexOf("projectKoreaSido")].disabled = false;
-            Elements.Checkbox[Object.keys(generator.Options).indexOf("projectKoreaSig")].disabled = false;
-            Elements.Checkbox[Object.keys(generator.Options).indexOf("squashLand")].disabled = true;
+            Elements.OptionButton[Object.keys(generator.Options).indexOf("projectChinaProvinceBorder")].disabled = true;
+            Elements.OptionButton[Object.keys(generator.Options).indexOf("projectKoreaBasemap")].disabled = false;
+            Elements.OptionButton[Object.keys(generator.Options).indexOf("projectKoreaSido")].disabled = false;
+            Elements.OptionButton[Object.keys(generator.Options).indexOf("projectKoreaSig")].disabled = false;
+            Elements.OptionButton[Object.keys(generator.Options).indexOf("projectKoreaSigMerged")].disabled = false;
+            Elements.OptionButton[Object.keys(generator.Options).indexOf("squashLand")].disabled = true;
         } else {
-            Elements.Checkbox[Object.keys(generator.Options).indexOf("projectChinaProvinceBorder")].disabled = false;
-            Elements.Checkbox[Object.keys(generator.Options).indexOf("projectKoreaSido")].disabled = true;
-            Elements.Checkbox[Object.keys(generator.Options).indexOf("projectKoreaSig")].disabled = true;
-            Elements.Checkbox[Object.keys(generator.Options).indexOf("squashLand")].disabled = false;
+            Elements.OptionButton[Object.keys(generator.Options).indexOf("projectChinaProvinceBorder")].disabled = false;
+            Elements.OptionButton[Object.keys(generator.Options).indexOf("projectKoreaBasemap")].disabled = true;
+            Elements.OptionButton[Object.keys(generator.Options).indexOf("projectKoreaSido")].disabled = true;
+            Elements.OptionButton[Object.keys(generator.Options).indexOf("projectKoreaSig")].disabled = true;
+            Elements.OptionButton[Object.keys(generator.Options).indexOf("projectKoreaSigMerged")].disabled = true;
+            Elements.OptionButton[Object.keys(generator.Options).indexOf("squashLand")].disabled = false;
         }
     };
 

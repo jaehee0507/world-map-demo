@@ -43,6 +43,8 @@ class WorldMapGenerator {
         circleStrokeWidth: "0.4pt",
         lineStrokeColor: "#0000ff",
         lineStrokeWidth: "0.4pt",
+        culturalBoundaryStrokeColor: "#000000",
+        culturalBoundaryStrokeWidth: "1.0pt"
     });
     /**
      * 분쟁 지역으로 간주되는 국가들의 집합입니다. 이 국가들은 특별한 스타일로 렌더링됩니다.
@@ -202,8 +204,9 @@ class WorldMapGenerator {
          * @param {string} optionName 토글된 옵션의 이름
          * @param {number} index 토글된 옵션의 인덱스
          * @param {boolean} value 토글된 옵션의 새로운 값
+         * @param {string} source 메서드 호출 출처
          */
-        OptionToggled: (optionName, index, value) => {},
+        OptionToggled: (optionName, index, value, source) => {},
         /**
          * WorldMapGenerator의 Type이 바뀔 때 DOM에 반영하기 위해 호출되는 콜백 함수입니다.
          * @param {WorldMapGenerator.GENERATOR_TYPES} type 바뀐 타입
@@ -250,8 +253,10 @@ class WorldMapGenerator {
         projectBorder: false,
         projectUSAStateBorder: false,
         projectChinaProvinceBorder: false,
+        projectKoreaBasemap: false,
         projectKoreaSido: false,
-        projectKoreaSig: false,
+        projectKoreaSigMerged: false,
+        projectKoreaSig: true,
         projectLongitude: true,
         projectLatitude: true,
         projectEquator: false,
@@ -436,8 +441,8 @@ class WorldMapGenerator {
     initJSON() {
         // 판 경계 데이터 로드
         Promise.all([
-            fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/plate_boundary.geojson").then(response => response.json()),
-            fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/plate_boundary_simple.geojson").then(response => response.json())
+            fetch("/resources/orion/tools/vectormap/data/new/plate_boundary.geojson").then(response => response.json()),
+            fetch("/resources/orion/tools/vectormap/data/new/plate_boundary_simple.geojson").then(response => response.json())
         ])
         .then(([plate, plateSimple]) => {
             this.GeoData.plate = plate;
@@ -447,8 +452,8 @@ class WorldMapGenerator {
         });
         // 호수 데이터 로드
         Promise.all([
-            fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/50m_lakes.geojson").then(response => response.json()),
-            fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/110m_lakes.geojson").then(response => response.json())
+            fetch("/resources/orion/tools/vectormap/data/new/50m_lakes.geojson").then(response => response.json()),
+            fetch("/resources/orion/tools/vectormap/data/new/110m_lakes.geojson").then(response => response.json())
         ])
             .then(([lake50, lake110]) => {
                 this.GeoData.lake50 = lake50;
@@ -458,8 +463,8 @@ class WorldMapGenerator {
             });
         // 미국(중국) 주(성) 데이터 로드
         Promise.all([
-            fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/50m_states.topojson").then(response => response.json()),
-            fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/110m_states_usa.topojson").then(response => response.json())
+            fetch("/resources/orion/tools/vectormap/data/new/50m_states.topojson").then(response => response.json()),
+            fetch("/resources/orion/tools/vectormap/data/new/110m_states_usa.topojson").then(response => response.json())
         ])
             .then(([states50, states110]) => {
                 let stateData = topojson.feature(states50, states50.objects.states);
@@ -494,7 +499,7 @@ class WorldMapGenerator {
                 this.drawSVG(false);
             });
         // 중국 성 경계 데이터 로드
-        fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/50m_provinces_china_border.geojson")
+        fetch("/resources/orion/tools/vectormap/data/new/50m_provinces_china_border.geojson")
             .then(response => response.json())
             .then((data) => {
                 this.GeoData.provincesChinaBorder50 = data;
@@ -504,8 +509,8 @@ class WorldMapGenerator {
         
         // 미국 주 경계 데이터 로드
         Promise.all([
-            fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/50m_states_usa_border.geojson").then(response => response.json()),
-            fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/110m_states_usa_border.geojson").then(response => response.json())
+            fetch("/resources/orion/tools/vectormap/data/new/50m_states_usa_border.geojson").then(response => response.json()),
+            fetch("/resources/orion/tools/vectormap/data/new/110m_states_usa_border.geojson").then(response => response.json())
         ])
             .then(([border50, border110]) => {
                 this.GeoData.statesUSABorder50 = border50;
@@ -515,9 +520,9 @@ class WorldMapGenerator {
             });
         // 육지 데이터 로드
         Promise.all([
-            fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/50m_land.topojson").then(response => response.json()),
-            fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/110m_land.topojson").then(response => response.json()),
-            fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/10m_land.topojson").then(response => response.json())
+            fetch("/resources/orion/tools/vectormap/data/new/50m_land.topojson").then(response => response.json()),
+            fetch("/resources/orion/tools/vectormap/data/new/110m_land.topojson").then(response => response.json()),
+            fetch("/resources/orion/tools/vectormap/data/new/10m_land.topojson").then(response => response.json())
         ])
             .then(([land50, land110, land10]) => {
                 this.GeoData.land50 = topojson.feature(land50, land50.objects.land);
@@ -528,11 +533,11 @@ class WorldMapGenerator {
             });
         // 국가 및 분쟁지역 데이터 로드
         Promise.all([
-            fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/50m_countries.topojson").then(response => response.json()),
-            fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/50m_dispute.topojson").then(response => response.json()),
-            fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/110m_countries.topojson").then(response => response.json()),
-            fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/110m_dispute.topojson").then(response => response.json()),
-            fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/10m_countries.topojson").then(response => response.json())
+            fetch("/resources/orion/tools/vectormap/data/new/50m_countries.topojson").then(response => response.json()),
+            fetch("/resources/orion/tools/vectormap/data/new/50m_dispute.topojson").then(response => response.json()),
+            fetch("/resources/orion/tools/vectormap/data/new/110m_countries.topojson").then(response => response.json()),
+            fetch("/resources/orion/tools/vectormap/data/new/110m_dispute.topojson").then(response => response.json()),
+            fetch("/resources/orion/tools/vectormap/data/new/10m_countries.topojson").then(response => response.json())
         ])
             .then(([countries50, dispute50, countries110, dispute110, countries10]) => {
                 this.GeoData.countries50 = topojson.feature(countries50, countries50.objects.countries);
@@ -549,8 +554,8 @@ class WorldMapGenerator {
             });
         // 독도 데이터 로드 - 대한민국 영토에 통합
         Promise.all([
-            fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/50m_dokdo.geojson").then(res => res.json()),
-            fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/110m_dokdo.geojson").then(res => res.json())
+            fetch("/resources/orion/tools/vectormap/data/new/50m_dokdo.geojson").then(res => res.json()),
+            fetch("/resources/orion/tools/vectormap/data/new/110m_dokdo.geojson").then(res => res.json())
         ])
             .then(([dokdo50, dokdo110]) => {
                 // land, countries가 모두 로드될 때까지 기다리기
@@ -605,12 +610,12 @@ class WorldMapGenerator {
             });
         // 고화질 한반도 백지도 데이터 로드
         Promise.all([
-            fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/korea_sido.topojson").then(response => response.json()),
-            fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/korea_sig.topojson").then(response => response.json()),
-            fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/korea_sig_merged.topojson").then(response => response.json()),
-            fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/korea_sido_border.geojson").then(response => response.json()),
-            fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/korea_sig_border.geojson").then(response => response.json()),
-            fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/korea_sig_merged_border.geojson").then(response => response.json())
+            fetch("/resources/orion/tools/vectormap/data/new/korea_sido.topojson").then(response => response.json()),
+            fetch("/resources/orion/tools/vectormap/data/new/korea_sig.topojson").then(response => response.json()),
+            fetch("/resources/orion/tools/vectormap/data/new/korea_sig_merged.topojson").then(response => response.json()),
+            fetch("/resources/orion/tools/vectormap/data/new/korea_sido_border.geojson").then(response => response.json()),
+            fetch("/resources/orion/tools/vectormap/data/new/korea_sig_border.geojson").then(response => response.json()),
+            fetch("/resources/orion/tools/vectormap/data/new/korea_sig_merged_border.geojson").then(response => response.json())
         ])
             .then(([koreaSido, koreaSig, koreaSigMerged, koreaSidoBorder, koreaSigBorder, koreaSigMergedBorder]) => {
                 this.GeoData.koreaBasemapSigMerged = topojson.feature(koreaSigMerged, koreaSigMerged.objects.sig);
@@ -625,9 +630,9 @@ class WorldMapGenerator {
             });
         // 국경선 데이터 로드
         Promise.all([
-            fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/50m_countries_border.geojson").then(response => response.json()),
-            fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/110m_countries_border.geojson").then(response => response.json()),
-            fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/10m_countries_border.geojson").then(response => response.json())
+            fetch("/resources/orion/tools/vectormap/data/new/50m_countries_border.geojson").then(response => response.json()),
+            fetch("/resources/orion/tools/vectormap/data/new/110m_countries_border.geojson").then(response => response.json()),
+            fetch("/resources/orion/tools/vectormap/data/new/10m_countries_border.geojson").then(response => response.json())
         ])
             .then(([border50, border110, border10]) => {
                 this.GeoData.countriesBorder50 = border50;
@@ -637,7 +642,7 @@ class WorldMapGenerator {
                 this.drawSVG(false);
             });
         // 지자기 경사각 데이터 로드
-        fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/inclination.json")
+        fetch("/resources/orion/tools/vectormap/data/new/inclination.json")
             .then(response => response.json())
             .then((data) => {
                 this.inclination = data;
@@ -645,7 +650,7 @@ class WorldMapGenerator {
                 this.drawSVG(false);
             });
         // 해류 데이터 로드
-        fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/ocean_currents.json")
+        fetch("/resources/orion/tools/vectormap/data/new/ocean_currents.json")
             .then(response => response.json())
             .then((data) => {
                 this.GeoData.oceanCurrents = data;
@@ -653,7 +658,7 @@ class WorldMapGenerator {
                 this.drawSVG(false);
             });
         // 심층 순환 데이터 로드
-        fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/deep_circulations.json")
+        fetch("/resources/orion/tools/vectormap/data/new/deep_circulations.json")
             .then(response => response.json())
             .then((data) => {
                 this.GeoData.deepCirculations = data;
@@ -662,7 +667,7 @@ class WorldMapGenerator {
             });
             
         // 문화권 영역 데이터 로드
-        fetch("/world-map-demo/resources/orion/tools/vectormap/data/new/plate_boundary.geojson")
+        fetch("/resources/orion/tools/vectormap/data/new/plate_boundary.geojson")
             .then(response => response.json())
             .then((data) => {
                 this.GeoData.culturalBoundary = data;
@@ -690,7 +695,7 @@ class WorldMapGenerator {
                     const keys = Object.keys(this.Options);
                     for (let i = 0; i < keys.length; i++) {
                         const optionName = keys[i];
-                        this.toggleOption(optionName, this._options_before[optionName], i === keys.length-1);
+                        this.toggleOption({option: optionName, value: this._options_before[optionName], draw: i === keys.length-1});
                     }
                     this.rotate = [...this._rotate_before];
                 } else {
@@ -703,12 +708,12 @@ class WorldMapGenerator {
                 this._options_before = Object.assign({}, this.Options);
                 this._rotate_before = [...this.rotate];
                 this.setProjection("Albers");
-                this.toggleOption("projectLakeReservoir", true, false);
-                this.toggleOption("squashLakeReservoir", false, false);
-                this.toggleOption("projectLand", true, false);
-                this.toggleOption("projectBorder", true, false);
-                this.toggleOption("projectUSAStateBorder", true, false);
-                this.toggleOption("squashLand", false);
+                this.toggleOption({option: "projectLakeReservoir", value: true, draw: false});
+                this.toggleOption({option: "squashLakeReservoir", value: true, draw: false});
+                this.toggleOption({option: "projectLand", value: true, draw: false});
+                this.toggleOption({option: "projectBorder", value: true, draw: false});
+                this.toggleOption({option: "projectUSAStateBorder", value: true, draw: false});
+                this.toggleOption({option: "squashLand", value: true});
                 this.fileName = "USAtype_map.svg"
                 break;
             case WorldMapGenerator.GENERATOR_TYPES.CJK:
@@ -716,12 +721,12 @@ class WorldMapGenerator {
                 this._options_before = Object.assign({}, this.Options);
                 this._rotate_before = [...this.rotate];
                 this.setProjection("Mercator");
-                this.toggleOption("projectLakeReservoir", true, false);
-                this.toggleOption("squashLakeReservoir", false, false);
-                this.toggleOption("projectLand", true, false);
-                this.toggleOption("projectBorder", true, false);
-                this.toggleOption("projectChinaProvinceBorder", true, false);
-                this.toggleOption("squashLand", false);
+                this.toggleOption({option: "projectLakeReservoir", value: true, draw: false});
+                this.toggleOption({option: "squashLakeReservoir", value: false, draw: false});
+                this.toggleOption({option: "projectLand", value: true, draw: false});
+                this.toggleOption({option: "projectBorder", value: true, draw: false});
+                this.toggleOption({option: "projectChinaProvinceBorder", value: true, draw: false});
+                this.toggleOption({option: "squashLand", draw: false});
                 this.fileName = "CJKtype_map.svg"
                 break;
             case WorldMapGenerator.GENERATOR_TYPES.KOR:
@@ -729,13 +734,15 @@ class WorldMapGenerator {
                 this._options_before = Object.assign({}, this.Options);
                 this._rotate_before = [...this.rotate];
                 this.setProjection("Mercator");
-                this.toggleOption("projectLakeReservoir", false, false);
-                this.toggleOption("projectLand", true, false);
-                this.toggleOption("projectBorder", true, false);
-                this.toggleOption("projectChinaProvinceBorder", false, false);
-                this.toggleOption("projectKoreaSido", true, false);
-                this.toggleOption("projectKoreaSig", true, false);
-                this.toggleOption("squashLand", false);
+                this.toggleOption({option: "projectLakeReservoir", value: false, draw: false});
+                this.toggleOption({option: "projectLand", value: true, draw: false});
+                this.toggleOption({option: "projectBorder", value: true, draw: false});
+                this.toggleOption({option: "projectChinaProvinceBorder", value: false, draw: false});
+                this.toggleOption({option: "projectKoreaBasemap", value: true, draw: false});
+                this.toggleOption({option: "projectKoreaSido", value: false, draw: false});
+                this.toggleOption({option: "projectKoreaSigMerged", value: false, draw: false});
+                this.toggleOption({option: "projectKoreaSig", value: true, draw: false});
+                this.toggleOption({option: "squashLand", value: false});
                 this.fileName = "KORtype_map.svg"
                 break;
         }
@@ -934,16 +941,32 @@ class WorldMapGenerator {
         return this.GeoData.provincesChinaBorder50;
     }
 
+    /**
+     * 대한민국 행정구역 데이터를 반환합니다.
+     * @returns {Object} GeoJSON FeatureCollection
+     */
     getKoreaBasemapForPath() {
-        if (this.Options.projectKoreaSido && !this.Options.projectKoreaSig)
+        if (this.Options.projectKoreaSido)
             return this.GeoData.koreaBasemapSido;
+        else if (this.Options.projectKoreaSig)
+            return this.GeoData.koreaBasemapSig;
         else
             return this.GeoData.koreaBasemapSigMerged;
     }
 
-    getKoreaBasemapBorderForPath(forseSido = false) {
-        if ((this.Options.projectKoreaSido && !this.Options.projectKoreaSig) || forseSido)
+    /**
+     * 대한민국 행정구역 경계선 데이터를 반환합니다.
+     * @param {boolean} [forceSido] 강제로 시도 경계선을 반환할지 여부
+     * @returns {Object} GeoJSON FeatureCollection
+     */
+    getKoreaBasemapBorderForPath(forceSido = false) {
+        if (forceSido)
             return this.GeoData.koreaBasemapSidoBorder;
+
+        if (this.Options.projectKoreaSido)
+            return this.GeoData.koreaBasemapSidoBorder;
+        else if (this.Options.projectKoreaSig)
+            return this.GeoData.koreaBasemapSigBorder;
         else
             return this.GeoData.koreaBasemapSigMergedBorder;
     }
@@ -1123,8 +1146,8 @@ class WorldMapGenerator {
         const feature = d3.select(element).datum();
         let sido = (feature.properties.hasOwnProperty("sido") ? feature.properties.sido : "");
         let name = feature.properties.name;
-        if (sido !== name)
-            name = sido + name;
+        if (sido !== "" && sido !== name)
+            name = sido + " " + name;
 
         if (this.selectedAreas.has(name)) {
             // 선택 해제: 굵기 원복 및 DOM 순서 맨 뒤로(또는 적절한 위치로) 이동
@@ -1212,10 +1235,11 @@ class WorldMapGenerator {
     /**
      * 지도 표시 옵션을 토글합니다. Callback.OptionToggled을 호출하여 변경된 옵션 정보를 전달합니다.
      * @param {number|string} option 옵션 인덱스 또는 옵션 이름
-     * @param {boolean} [forceValue] 강제로 설정할 옵션 값
+     * @param {boolean} [value] 강제로 설정할 옵션 값
      * @param {boolean} [draw=true] SVG를 다시 그릴지 여부
+     * @param {string} [source="api"] 메서드 호출 출처
      */
-    toggleOption(option, forceValue, draw = true) {
+    toggleOption({option, value, draw = true, source = "api"} = {}) {
         let optionIndex, optionName;
         // option이 index일 때
         if (typeof option === "number") {
@@ -1226,12 +1250,13 @@ class WorldMapGenerator {
             optionIndex = Object.keys(this.Options).indexOf(option);
             optionName = option;
         }
-        if (typeof forceValue === "boolean")
-            this.Options[optionName] = forceValue;
+        if (typeof value === "boolean")
+            this.Options[optionName] = value;
         else
             this.Options[optionName] = !this.Options[optionName];
 
-        this.Callback.OptionToggled(optionName, optionIndex, this.Options[optionName]);
+        this.Callback.OptionToggled(optionName, optionIndex, this.Options[optionName], source);
+
         if (draw)
             this.drawSVG(false);
     }
@@ -1298,7 +1323,7 @@ class WorldMapGenerator {
 
         // 배경(바다 등) 그리기
         group.append("path")
-            .attr("id", "ocean")
+            .attr("id", "바다")
             .attr("d", this.path(this.outline))
             .attr("fill", this.CustomStyles.oceanFillColor)
             .attr("stroke", "none");
@@ -1316,7 +1341,7 @@ class WorldMapGenerator {
             if (!this.Options.projectBorder) {
                 // 육지 데이터만 렌더링
                 group.append("g")
-                    .attr("id", "land")
+                    .attr("id", "육지")
                     .selectAll("path")
                     .data(this.getLandForPath(forceSquash).features)
                     .enter()
@@ -1339,12 +1364,12 @@ class WorldMapGenerator {
                 });
 
                 group.append("g")
-                    .attr("id", "countries")
+                    .attr("id", "국가")
                     .selectAll("path")
                     .data(features)
                     .enter()
                     .append("path")
-                    .attr("id", (d) => d.properties.name.replace(/\s/g, "-"))
+                    .attr("id", (d) => d.properties.name)
                     .attr("d", (d) => this.path(d))
                     .attr("fill", (s) => {
                         return this.selectedAreas.has(s.properties.name) ? this.CustomStyles.selectedCountryFillColor : this.CustomStyles.landFillColor;
@@ -1369,12 +1394,12 @@ class WorldMapGenerator {
                     });
 
                     group.append("g")
-                        .attr("id", "states")
+                        .attr("id", "미국 주")
                         .selectAll("path")
                         .data(features)
                         .enter()
                         .append("path")
-                        .attr("id", (d) => d.properties.name.replace(/\s/g, "-"))
+                        .attr("id", (d) => d.properties.name)
                         .attr("d", (d) => this.path(d))
                         .attr("fill", (s) => {
                             return this.selectedAreas.has(s.properties.name) ? this.CustomStyles.selectedCountryFillColor : this.CustomStyles.landFillColor;
@@ -1388,7 +1413,7 @@ class WorldMapGenerator {
                         .text((s) => (s.properties.name_ko + " 주"));
 
                     group.append("g")
-                        .attr("id", "states-border")
+                        .attr("id", "미국 주 경계")
                         .selectAll("path")
                         .data(this.getUSAStatesBorderForPath(forceSquash).features)
                         .enter()
@@ -1413,12 +1438,12 @@ class WorldMapGenerator {
                     });
 
                     group.append("g")
-                        .attr("id", "provinces")
+                        .attr("id", "중국 성")
                         .selectAll("path")
                         .data(features)
                         .enter()
                         .append("path")
-                        .attr("id", (d) => d.properties.name.replace(/\s/g, "-"))
+                        .attr("id", (d) => d.properties.name)
                         .attr("d", (d) => this.path(d))
                         .attr("fill", (s) => {
                             return this.selectedAreas.has(s.properties.name) ? this.CustomStyles.selectedCountryFillColor : this.CustomStyles.landFillColor;
@@ -1432,7 +1457,7 @@ class WorldMapGenerator {
                         .text((s) => (s.properties.name_ko));
 
                     group.append("g")
-                        .attr("id", "provinces-border")
+                        .attr("id", "중국 성 경계")
                         .selectAll("path")
                         .data(this.getChinaProvincesBorderForPath().features)
                         .enter()
@@ -1445,17 +1470,17 @@ class WorldMapGenerator {
                         .attr("stroke-linejoin", "round");
                 }
 
-                // 한국 시도 경계선 렌더링
-                if (this.Options.projectKoreaSido && !this.Options.squashLand) {
+                // 대한민국 행정구역 경계선 렌더링
+                if (this.Options.projectKoreaBasemap && !this.Options.squashLand) {
                     const nameFunc = (d) => {
                         let sido = (d.properties.hasOwnProperty("sido") ? d.properties.sido : "");
                         let name = d.properties.name;
                         if (sido === name)
                             return name;
                         else
-                            return sido + name;
+                            return sido + " " + name;
                     }
-                    // 선택된 시도가 나중에 그려지도록 정렬
+                    // 선택된 행정구역이 나중에 그려지도록 정렬
                     const features = this.getKoreaBasemapForPath().features.slice().sort((a, b) => {
                         const nameA = nameFunc(a);
                         const nameB = nameFunc(b);
@@ -1465,19 +1490,12 @@ class WorldMapGenerator {
                     });
 
                     group.append("g")
-                        .attr("id", "korea-basemap")
+                        .attr("id", "대한민국 행정구역")
                         .selectAll("path")
                         .data(features)
                         .enter()
                         .append("path")
-                        .attr("id", (d) => {
-                            let sido = (d.properties.hasOwnProperty("sido") ? d.properties.sido : "");
-                            let name = d.properties.name;
-                            if (sido === name)
-                                return name;
-                            else
-                                return sido + "-" + name; 
-                        })
+                        .attr("id", (d) => nameFunc(d))
                         .attr("d", (d) => this.path(d))
                         .attr("fill", (s) => {
                             return this.selectedAreas.has(nameFunc(s)) ? this.CustomStyles.selectedCountryFillColor : this.CustomStyles.landFillColor;
@@ -1488,17 +1506,10 @@ class WorldMapGenerator {
                         .attr("stroke-width", this.CustomStyles.selectedCountryStrokeWidth)
                         .attr("onclick", "generator.toggleCountryStroke(this)")
                         .append("title")
-                        .text((d) => {
-                            let sido = (d.properties.hasOwnProperty("sido") ? d.properties.sido : "");
-                            let name = d.properties.name;
-                            if (sido === name)
-                                return name;
-                            else
-                                return sido + " " + name; 
-                        });
+                        .text((s) => nameFunc(s));
 
                     group.append("g")
-                        .attr("id", "korea-basemap-border")
+                        .attr("id", "대한민국 행정구역 경계선")
                         .selectAll("path")
                         .data(this.getKoreaBasemapBorderForPath().features)
                         .enter()
@@ -1510,9 +1521,9 @@ class WorldMapGenerator {
                         .attr("stroke-dasharray", this.CustomStyles.borderStrokeDash)
                         .attr("stroke-linejoin", "round");
 
-                    if (this.Options.projectKoreaSig)
+                    if (this.Options.projectKoreaSig || this.Options.projectKoreaSigMerged)
                         group.append("g")
-                            .attr("id", "korea-basemap-sido-border")
+                            .attr("id", "대한민국 행정구역 시도단위 경계선")
                             .selectAll("path")
                             .data(this.getKoreaBasemapBorderForPath(true).features)
                             .enter()
@@ -1526,7 +1537,7 @@ class WorldMapGenerator {
 
                 // 국가 및 분쟁지역 경계선 렌더링
                 group.append("g")
-                    .attr("id", "countries-border")
+                    .attr("id", "국가 경계선")
                     .selectAll("path")
                     .data(this.getCountryBoundaryForPath(forceSquash).features)
                     .enter()
@@ -1547,7 +1558,7 @@ class WorldMapGenerator {
                     
                 // 육지 데이터는 테두리만 렌더링
                 group.append("path")
-                    .attr("id", "land-border")
+                    .attr("id", "육지 경계선")
                     .attr("d", this.path(this.getLandForPath(forceSquash)))
                     .attr("fill", "none")
                     .attr("stroke", this.CustomStyles.landStrokeColor)
@@ -1558,12 +1569,12 @@ class WorldMapGenerator {
 
         if (this.Options.projectLakeReservoir) {
             group.append("g")
-                .attr("id", "lake-reservoir")
+                .attr("id", "호수 및 저수지")
                 .selectAll("path")
                 .data(this.getLakeReservoirForPath(forceSquash).features)
                 .enter()
                 .append("path")
-                .attr("id", (d) => d.properties.name ? d.properties.name.replace(/\s/g, "-") : "")
+                .attr("id", (d) => d.properties.name ? d.properties.name : "")
                 .attr("d", (d) => this.path(d))
                 .attr("fill", this.CustomStyles.lakeFillColor)
                 .attr("stroke", this.CustomStyles.lakeStrokeColor)
@@ -1575,7 +1586,7 @@ class WorldMapGenerator {
 
         if (this.Options.projectPlateBoundary)
             group.append("path")
-                .attr("id", "plate-boundary")
+                .attr("id", "판의 경계")
                 .attr("d", this.path(this.getPlateBoundaryForPath()))
                 .attr("fill", "none")
                 .attr("stroke", "#000")
@@ -1584,7 +1595,7 @@ class WorldMapGenerator {
 
         if (this.Options.projectInclination)
             group.append("path")
-                .attr("id", "inclination")
+                .attr("id", "등복각선")
                 .attr("d", this.path(this.getInclinationForPath()))
                 .attr("fill", "none")
                 .attr("stroke", "#000")
@@ -1592,16 +1603,16 @@ class WorldMapGenerator {
                 .attr("stroke-linejoin", "round");
 
         if (this.Options.projectOceanCurrents) {
-            const oceanCurrents = group.append("g").attr("id", "ocean-currents");
+            const oceanCurrents = group.append("g").attr("id", "표층해류");
             oceanCurrents.append("path")
-                .attr("id", "warm")
+                .attr("id", "난류")
                 .attr("d", this.path(this.getOceanCurrentsForPath("warm")))
                 .attr("fill", "none")
                 .attr("stroke", "#f00")
                 .attr("stroke-width", "0.7pt")
                 .attr("stroke-linejoin", "round");
             oceanCurrents.append("path")
-                .attr("id", "cold")
+                .attr("id", "한류")
                 .attr("d", this.path(this.getOceanCurrentsForPath("cold")))
                 .attr("fill", "none")
                 .attr("stroke", "#00f")
@@ -1610,10 +1621,10 @@ class WorldMapGenerator {
         }
 
         if (this.Options.projectDeepCirculations) {
-            const deepCirculations = group.append("g").attr("id", "deep-circulations");
+            const deepCirculations = group.append("g").attr("id", "심층순환");
             if (this.Options.projectBottomWater)
                 deepCirculations.append("path")
-                    .attr("id", "bottom")
+                    .attr("id", "저층수")
                     .attr("d", this.path(this.getDeepCirculationsForPath("bottom")))
                     .attr("fill", "none")
                     .attr("stroke", "#bbb")
@@ -1621,7 +1632,7 @@ class WorldMapGenerator {
                     .attr("stroke-linejoin", "round");
             if (this.Options.projectDeepWater)
                 deepCirculations.append("path")
-                    .attr("id", "deep")
+                    .attr("id", "심층수")
                     .attr("d", this.path(this.getDeepCirculationsForPath("deep")))
                     .attr("fill", "none")
                     .attr("stroke", "#666")
@@ -1629,7 +1640,7 @@ class WorldMapGenerator {
                     .attr("stroke-linejoin", "round");
             if (this.Options.projectSurfaceWater)
                 deepCirculations.append("path")
-                    .attr("id", "surface")
+                    .attr("id", "표층수")
                     .attr("d", this.path(this.getDeepCirculationsForPath("surface")))
                     .attr("fill", "none")
                     .attr("stroke", "#000")
@@ -1639,25 +1650,25 @@ class WorldMapGenerator {
 
         if (this.Options.projectCulturalBoundary) {
             group.append("g")
-                .attr("id", "cultural-boundary")
+                .attr("id", "문화권 영역")
                 .selectAll("path")
                 .data(this.getCulturalBoundaryForPath().features)
                 .enter()
                 .append("path")
                 .attr("d", (d) => this.path(d))
                 .attr("fill", "none")
-                .attr("stroke", "#000")
-                .attr("stroke-width", "0.4pt")
+                .attr("stroke", this.CustomStyles.culturalBoundaryStrokeColor)
+                .attr("stroke-width", this.CustomStyles.culturalBoundaryStrokeWidth)
                 .attr("stroke-linejoin", "round");
         }
 
         let graticules;
         if (this.Options.projectLatitude || this.Options.projectLongitude)
-            graticules = group.append("g").attr("id", "graticules");
+            graticules = group.append("g").attr("id", "위경도");
 
         if (this.Options.projectLatitude)
             graticules.append("path")
-                .attr("id", "latitude")
+                .attr("id", "위도선")
                 .attr("d", this.path(this.getLatitudeForPath()))
                 .attr("fill", "none")
                 .attr("stroke", "#000")
@@ -1666,7 +1677,7 @@ class WorldMapGenerator {
 
         if (this.Options.projectLongitude)
             graticules.append("path")
-                .attr("id", "longitude")
+                .attr("id", "경도선")
                 .attr("d", this.path(this.getLongitudeForPath()))
                 .attr("fill", "none")
                 .attr("stroke", "#000")
@@ -1677,7 +1688,7 @@ class WorldMapGenerator {
             && ((this.type === WorldMapGenerator.GENERATOR_TYPES.SPHERE && Math.abs(this.rotate[1]) !== 90)
             || this.type === WorldMapGenerator.GENERATOR_TYPES.VARIOUS))
             group.append("path")
-                .attr("id", "equator")
+                .attr("id", "적도선")
                 .attr("d", this.path(this.getEquatorForPath()))
                 .attr("fill", "none")
                 .attr("stroke", "#000")
@@ -1685,7 +1696,7 @@ class WorldMapGenerator {
 
         if (this.Options.projectTropicOfCancer) {
             group.append("path")
-                .attr("id", "tropic-of-cancer")
+                .attr("id", "북회귀선")
                 .attr("d", this.path(this.getTropicOfCancerForPath()))
                 .attr("fill", "none")
                 .attr("stroke", "#000")
@@ -1694,7 +1705,7 @@ class WorldMapGenerator {
 
         if (this.Options.projectTropicOfCapricorn) {
             group.append("path")
-                .attr("id", "tropic-of-capricorn")
+                .attr("id", "남회귀선")
                 .attr("d", this.path(this.getTropicOfCapricornForPath()))
                 .attr("fill", "none")
                 .attr("stroke", "#000")
@@ -1703,7 +1714,7 @@ class WorldMapGenerator {
 
         if (this.Options.projectNorthernArcticCircle) {
             group.append("path")
-                .attr("id", "northern-arctic-circle")
+                .attr("id", "북극권")
                 .attr("d", this.path(this.getNorthernArcticCircle()))
                 .attr("fill", "none")
                 .attr("stroke", "#000")
@@ -1712,7 +1723,7 @@ class WorldMapGenerator {
 
         if (this.Options.projectSouthernArcticCircle) {
             group.append("path")
-                .attr("id", "southern-arctic-circle")
+                .attr("id", "남극권")
                 .attr("d", this.path(this.getSouthernArcticCircle()))
                 .attr("fill", "none")
                 .attr("stroke", "#000")
@@ -2040,7 +2051,14 @@ class WorldMapGenerator {
 
         if (this.Options.projectCulturalBoundary) {
             const feats = this.getCulturalBoundaryForPath().features;
-            feats.forEach(f => { ctx.beginPath(); canvasPath(f); ctx.lineWidth = 0.4; ctx.strokeStyle = '#000'; ctx.stroke(); });
+            feats.forEach(f => {
+                ctx.beginPath();
+                canvasPath(f);
+                ctx.lineWidth = parseFloat(this.CustomStyles.culturalBoundaryStrokeWidth);
+                ctx.strokeStyle = this.CustomStyles.culturalBoundaryStrokeColor;
+                if (parseFloat(this.CustomStyles.culturalBoundaryStrokeWidth) > 0)
+                    ctx.stroke();
+            });
         }
 
         // 경위도선

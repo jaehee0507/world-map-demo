@@ -7,25 +7,25 @@
 	<title>다양한 도법 생성기</title>
     <meta charset="utf-8">
 	
-	<link rel="stylesheet" href="/world-map-demo/resources/orion/css/tools.css?after">
-    <link rel="stylesheet" href="/world-map-demo/resources/orion/css/generator.css?after">
-    <link rel="icon" href="/world-map-demo/resources/orion/images/favicon.png" sizes="any" type="image/png">
-    <link rel="icon" href="/world-map-demo/resources/orion/images/favicon-32.png" sizes="32x32" type="image/png">
-    <link rel="icon" href="/world-map-demo/resources/orion/images/favicon-192.png" sizes="192x192" type="image/png">
-    <link rel="apple-touch-icon" href="/world-map-demo/resources/orion/images/apple-icon.png" type="image/png">
+	<link rel="stylesheet" href="/resources/orion/css/tools.css?after">
+    <link rel="stylesheet" href="/resources/orion/css/generator.css?after">
+    <link rel="icon" href="/resources/orion/images/favicon.png" sizes="any" type="image/png">
+    <link rel="icon" href="/resources/orion/images/favicon-32.png" sizes="32x32" type="image/png">
+    <link rel="icon" href="/resources/orion/images/favicon-192.png" sizes="192x192" type="image/png">
+    <link rel="apple-touch-icon" href="/resources/orion/images/apple-icon.png" type="image/png">
     
-    <script src="/world-map-demo/resources/orion/tools/vectormap/js/d3.v6.min.js"></script>
-    <script src="/world-map-demo/resources/orion/tools/vectormap/js/d3-geo-projection.v3.min.js"></script>
-    <script src="/world-map-demo/resources/orion/tools/vectormap/js/topojson.js"></script>
-    <script src="/world-map-demo/resources/orion/tools/vectormap/js/WorldMapGenerator.js"></script>
-    <script src="/world-map-demo/resources/orion/tools/vectormap/js/varioustype.js"></script>
+    <script src="/resources/orion/tools/vectormap/js/d3.v6.min.js"></script>
+    <script src="/resources/orion/tools/vectormap/js/d3-geo-projection.v3.min.js"></script>
+    <script src="/resources/orion/tools/vectormap/js/topojson.js"></script>
+    <script src="/resources/orion/tools/vectormap/js/WorldMapGenerator.js"></script>
+    <script src="/resources/orion/tools/vectormap/js/varioustype.js"></script>
     
     <!-- Custom fonts for this template -->
-    <link rel="stylesheet" href="/world-map-demo/resources/vendor/fontawesome-free/css/all.min.css" type="text/css">
+    <link rel="stylesheet" href="/resources/vendor/fontawesome-free/css/all.min.css" type="text/css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i">
  
     <!-- Custom styles for this template -->
-    <link rel="stylesheet" href="/world-map-demo/resources/css/sb-admin-2.min.css">
+    <link rel="stylesheet" href="/resources/css/sb-admin-2.min.css">
 
 </head>
 
@@ -128,10 +128,16 @@
                                         <label><input type="checkbox" class="option-checkbox" /> 중국 성(省) 표시 (단순화하면 안 보임)</label>
                                     </div>
                                     <div style="margin-bottom: 3px; margin-left: 30px;">
-                                        <label><input type="checkbox" class="option-checkbox" /> 시도 표시 (한반도 중심 모드 전용)</label>
+                                        <label><input type="checkbox" class="option-checkbox" /> 대한민국 행정구역 표시</label>
                                     </div>
                                     <div style="margin-bottom: 3px; margin-left: 45px;">
-                                        <label><input type="checkbox" class="option-checkbox" /> 시군구 표시 (한반도 중심 모드 전용)</label>
+                                        <label><input type="radio" class="option-checkbox" name="korea-basemap" id="radio-sido" /> 광역자치단체 표시</label>
+                                    </div>
+                                    <div style="margin-bottom: 3px; margin-left: 45px;">
+                                        <label><input type="radio" class="option-checkbox" name="korea-basemap" id="radio-sig-merged" /> 기초자치단체 표시 (구(區) 제외)</label>
+                                    </div>
+                                    <div style="margin-bottom: 3px; margin-left: 45px;">
+                                        <label><input type="radio" class="option-checkbox" name="korea-basemap" id="radio-sig" /> 기초자치단체 표시 (구(區) 포함)</label>
                                     </div>
                                     <div style="margin-bottom: 3px;">
                                         <label><input type="checkbox" class="option-checkbox" /> 경도선 표시</label>
@@ -264,7 +270,7 @@
                                     <hr>
                                     <!-- Border -->
                                     <div class="mb-3">
-                                        <strong class="d-block mb-1">국경선</strong>
+                                        <strong class="d-block mb-1">경계선</strong>
                                         <div class="d-flex align-items-center justify-content-between mb-1">
                                             <span>색상</span>
                                             <input type="color" style="width:50px;" oninput="updateStyleWithDebounce('borderStrokeColor', this.value)">
@@ -310,6 +316,19 @@
                                         <div class="d-flex align-items-center justify-content-between">
                                             <span>테두리 두께</span>
                                             <input type="text" style="width:60px; text-align:right;" oninput="generator.setCustomStyle('selectedCountryStrokeWidth', this.value, false)">
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <!-- Cultural Boundary -->
+                                    <div class="mb-3">
+                                        <strong class="d-block mb-1">문화권 영역</strong>
+                                        <div class="d-flex align-items-center justify-content-between mb-1">
+                                            <span>테두리 색</span>
+                                            <input type="color" style="width:50px;" oninput="updateStyleWithDebounce('culturalBoundaryStrokeColor', this.value)">
+                                        </div>
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <span>테두리 두께</span>
+                                            <input type="text" style="width:60px; text-align:right;" oninput="generator.setCustomStyle('culturalBoundaryStrokeWidth', this.value, false)">
                                         </div>
                                     </div>
                                     <hr>
@@ -410,14 +429,14 @@
 <%@include file="../../includes/footer.jsp"%>
     
     <!-- Bootstrap core JavaScript-->
-    <script src="/world-map-demo/resources/vendor/jquery/jquery.min.js"></script>
-    <script src="/world-map-demo/resources/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/resources/vendor/jquery/jquery.min.js"></script>
+    <script src="/resources/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
     <!-- Core plugin JavaScript-->
-    <script src="/world-map-demo/resources/vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="/resources/vendor/jquery-easing/jquery.easing.min.js"></script>
 
     <!-- Custom scripts for all pages-->
-    <script src="/world-map-demo/resources/js/sb-admin-2.min.js"></script>
+    <script src="/resources/js/sb-admin-2.min.js"></script>
 </body>
 
 </html>
