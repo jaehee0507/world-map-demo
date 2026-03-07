@@ -1475,7 +1475,7 @@ class WorldMapGenerator {
                     const nameFunc = (d) => {
                         let sido = (d.properties.hasOwnProperty("sido") ? d.properties.sido : "");
                         let name = d.properties.name;
-                        if (sido === name)
+                        if (sido !== "" && sido === name)
                             return name;
                         else
                             return sido + " " + name;
