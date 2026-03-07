@@ -713,7 +713,7 @@ class WorldMapGenerator {
                 this.toggleOption({option: "projectLand", value: true, draw: false});
                 this.toggleOption({option: "projectBorder", value: true, draw: false});
                 this.toggleOption({option: "projectUSAStateBorder", value: true, draw: false});
-                this.toggleOption({option: "squashLand", value: true});
+                this.toggleOption({option: "squashLand", value: false});
                 this.fileName = "USAtype_map.svg"
                 break;
             case WorldMapGenerator.GENERATOR_TYPES.CJK:
@@ -726,7 +726,7 @@ class WorldMapGenerator {
                 this.toggleOption({option: "projectLand", value: true, draw: false});
                 this.toggleOption({option: "projectBorder", value: true, draw: false});
                 this.toggleOption({option: "projectChinaProvinceBorder", value: true, draw: false});
-                this.toggleOption({option: "squashLand", draw: false});
+                this.toggleOption({option: "squashLand", value: false});
                 this.fileName = "CJKtype_map.svg"
                 break;
             case WorldMapGenerator.GENERATOR_TYPES.KOR:
